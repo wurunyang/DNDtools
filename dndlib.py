@@ -41,4 +41,4 @@ def roll_dice(cmd: str = "1d6"):
 
 
 if __name__ == '__main__':
-    roll_dice("2*(2d6+2*1d8)+1")
+    roll_dice()
