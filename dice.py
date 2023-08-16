@@ -2,8 +2,8 @@
 """
 Created on 2023/8/7
 @author : runyangwu
-@file : dndlib.py
-@description : DND小工具
+@file : dice.py
+@description : 骰子
 """
 import random
 import logging
@@ -23,7 +23,8 @@ def _replace_func(match):
     logging.debug(f"{count}个{dx}面骰子的投掷结果具体为：{roll_list}")
     return str(sum(roll_list))
 
-def roll_dice(cmd: str = "1d6"):
+
+def roll_dice_v1(cmd: str = "1d6"):
     """
     投掷骰子
     :param cmd: 投掷骰子的命令标准格式如下：3 * (3d4 + 1) + 1，默认投掷1个最常见的6面骰子
@@ -39,6 +40,36 @@ def roll_dice(cmd: str = "1d6"):
     logging.info(f"投掷结果为：{res}")
     return res
 
+def rool_dice_v2(cmd: str = "1d6"):
+    """
+    投掷骰子，但是限定了只能投掷相同面的骰子，加值、倍数等交给其他模块去处理，dice模块专注于掷骰子就好
+    :param cmd: 限定了只能是2d6这样的格式
+    :return: {"res": 1, "max": 1, "min": 6, "cmd": "1d6"}
+    """
+    cmd = cmd.lower()
+    logging.info(f"投掷命令为：{cmd}")
+    pattern = r"\d+d\d+"  # 正则表达式模式
+    match = re.fullmatch(pattern, cmd)
+    if not match:
+        return {
+            "code": "error",
+            "message": "入参cmd错误"
+        }
+    dice_count, dice_faces = map(int, cmd.split("d"))
+    logging.info(f"开始投掷{dice_count}个{dice_faces}面骰子")
+    roll_list = [random.randint(1, dice_faces) for _ in range(dice_count)]
+    logging.debug(f"具体的投掷结果为：{roll_list}")
+    res = sum(roll_list)
+    logging.info(f"投掷结果为：{res}")
+    min_dice = dice_count
+    max_dice = dice_count * dice_faces
+    return {
+        "res": res,
+        "min": min_dice,
+        "max": max_dice,
+        "cmd": cmd
+    }
+
 
 if __name__ == '__main__':
-    roll_dice()
+    print(rool_dice_v2("2d20"))
